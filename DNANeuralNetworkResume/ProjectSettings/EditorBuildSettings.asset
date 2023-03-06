@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Digit.unity
     guid: ace3e9b1ffe519a489732fe3cbfb3716
+  - enabled: 1
+    path: Assets/Scenes/CustDigit.unity
+    guid: 8ba790bab9cd19e428e50f25c83513db
   m_configObjects: {}

@@ -6,21 +6,19 @@ using FlexUI;
 using DNANeuralNetwork;
 using System.IO;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class DigitRecScript : MonoBehaviour
 {
     [SerializeField] List<string> testingImagePaths = new List<string>();
-
     [SerializeField] List<string> Labels;
-
     [SerializeField] RectTransform holder;
-
     [SerializeField] GameObject DispPrefab;
 
     [SerializeField] Image Image;
-    [SerializeField] Button Load;
     [SerializeField] Button Next;
     [SerializeField] Text debug;
+    [SerializeField] Button back;
 
     NeuralNetwork neuro;
     List<DataPoint> allData = new List<DataPoint>();
@@ -33,8 +31,10 @@ public class DigitRecScript : MonoBehaviour
     void Start()
     {
         setUI();
-        Load.onClick.AddListener(loadNetwork);
+        // Load.onClick.AddListener(loadNetwork);
+        loadNetwork();
         Next.onClick.AddListener(NextImage);
+        back.onClick.AddListener(backToMenu);
     }
 
     // Update is called once per frame
@@ -58,8 +58,8 @@ public class DigitRecScript : MonoBehaviour
 
         Flex Buttons = new Flex(SideBar.getChild(2), 1, SideBar);
 
-        Flex LoadBTN = new Flex(Buttons.getChild(0), 1, Buttons);
-        Flex NextBTN = new Flex(Buttons.getChild(1), 1, Buttons);
+       // Flex LoadBTN = new Flex(Buttons.getChild(0), 1, Buttons);
+        Flex NextBTN = new Flex(Buttons.getChild(0), 1, Buttons);
 
         Results.setSpacingFlex(2f, 1);
         //Add Children
@@ -86,14 +86,10 @@ public class DigitRecScript : MonoBehaviour
 
     void loadNetwork ()
     {
-        debug.text = "About to load";
-       // neuro = loadSaveFromPathNeuralNetwork("Assets/Resources/NeuralNetworks/DigitRec/DigitNetwork.json");
         neuro = loadNeuralNetwork("NeuralNetworks/DigitRec/DigitNetwork");
-        debug.text = neuro.layers.Length + "";
-
+       
         neuro.SetActivationFunction(Activation.GetActivationFromType(Activation.ActivationType.ReLU), Activation.GetActivationFromType(Activation.ActivationType.Softmax));
 
-        debug.text = "Loading Images";
         for (int i = 0; i < testingImagePaths.Count; i++)
         {
             //Load Fours first
@@ -107,12 +103,10 @@ public class DigitRecScript : MonoBehaviour
             }
         }
 
-        debug.text = "Finished Loading";
         //Shuffle
         List<DataPoint> shuffle = new List<DataPoint>();
         List<Texture2D> imgs = new List<Texture2D>();
 
-        debug.text = "Shuffling";
         while (allData.Count > 0)
         {
             int ran = Random.Range(0, allData.Count);
@@ -123,11 +117,9 @@ public class DigitRecScript : MonoBehaviour
             allData.RemoveAt(ran);
             allImages.RemoveAt(ran);
         }
-        debug.text = "Finished Shuffling";
         allData = shuffle;
         allImages = imgs;
 
-        debug.text = "Next Image";
         //Display First
         NextImage();
     }
@@ -251,5 +243,10 @@ public class DigitRecScript : MonoBehaviour
 
         return data;
 
+    }
+
+    void backToMenu ()
+    {
+        SceneManager.LoadScene("Menu", LoadSceneMode.Single);
     }
 }

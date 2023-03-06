@@ -803,12 +803,16 @@ MonoBehaviour:
   holder: {fileID: 911155425}
   sceneNames:
   - Digits
+  - Custom Digits
   backgrounds:
-  - {fileID: 2800000, guid: 4481fe19580ad6449ba32c4aa83a579d, type: 3}
+  - {fileID: 2800000, guid: de79751c1c35b8142bd2e9bb2b21e8d3, type: 3}
+  - {fileID: 2800000, guid: fb9935ba390e89743b7dc662ff62d9cb, type: 3}
   icon:
   - {fileID: 2800000, guid: 9c80d602344045e4583c1b828bdc69bd, type: 3}
+  - {fileID: 2800000, guid: 6e7c685183c77f641aa33897c0d2df13, type: 3}
   sceneName:
   - Digit
+  - CustDigit
   cardPrefab: {fileID: 828801204384009735, guid: 666874e1b355fc24dadec7aaf8f4ebb8, type: 3}
 --- !u!1 &1439918841
 GameObject:
