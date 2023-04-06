@@ -61,7 +61,7 @@ public class DigitRecScript : MonoBehaviour
        // Flex LoadBTN = new Flex(Buttons.getChild(0), 1, Buttons);
         Flex NextBTN = new Flex(Buttons.getChild(0), 1, Buttons);
 
-        Results.setSpacingFlex(2f, 1);
+        Results.setSpacingFlex(1f, 1);
         //Add Children
         for (int i = 0; i < Labels.Count; i ++)
         {
@@ -143,7 +143,7 @@ public class DigitRecScript : MonoBehaviour
         }
 
         //Display Guess
-        holder.GetChild(1).GetChild(1).GetComponent<Text>().text = "The Computer thinks this is a " + Labels[label];
+        holder.GetChild(1).GetChild(1).GetComponent<Text>().text = "Computers Guess: " + Labels[label];
 
         index++;
     }
