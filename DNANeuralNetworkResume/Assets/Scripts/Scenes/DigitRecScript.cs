@@ -26,6 +26,7 @@ public class DigitRecScript : MonoBehaviour
 
     Vector2Int size = new Vector2Int(28, 28);
     int index = 0;
+    int textSize;
 
     // Start is called before the first frame update
     void Start()
@@ -61,7 +62,9 @@ public class DigitRecScript : MonoBehaviour
        // Flex LoadBTN = new Flex(Buttons.getChild(0), 1, Buttons);
         Flex NextBTN = new Flex(Buttons.getChild(0), 1, Buttons);
 
-        Results.setSpacingFlex(2f, 1);
+        Results.setSpacingFlex(1f, 1);
+        Results.setSelfHorizontalPadding(0.02f, 1, 0.02f, 1);
+        Guess.setSelfHorizontalPadding(0.02f, 1, 0.02f, 1);
         //Add Children
         for (int i = 0; i < Labels.Count; i ++)
         {
@@ -81,6 +84,9 @@ public class DigitRecScript : MonoBehaviour
         Img.setSquare();
 
         Holder.setSize(new Vector2(Screen.width, Screen.height));
+
+        textSize = Results.getChild(0).GetChild(0).GetComponent<Text>().fontSize;
+        Guess.UI.GetComponent<Text>().fontSize = textSize;
 
     }
 
@@ -143,7 +149,7 @@ public class DigitRecScript : MonoBehaviour
         }
 
         //Display Guess
-        holder.GetChild(1).GetChild(1).GetComponent<Text>().text = "The Computer thinks this is a " + Labels[label];
+        holder.GetChild(1).GetChild(1).GetComponent<Text>().text = "Answer: " + Labels[label];
 
         index++;
     }

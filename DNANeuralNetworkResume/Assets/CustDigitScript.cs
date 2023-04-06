@@ -22,6 +22,8 @@ public class CustDigitScript : MonoBehaviour
 
     NeuralNetwork neuro;
 
+    int textSize;
+
 
     bool firstRun = true;
 
@@ -76,7 +78,9 @@ public class CustDigitScript : MonoBehaviour
 
         Flex NextBTN = new Flex(Buttons.getChild(0), 1, Buttons);
 
-        Results.setSpacingFlex(2f, 1);
+        Results.setSpacingFlex(1f, 1);
+        Results.setSelfHorizontalPadding(0.02f, 1, 0.02f, 1);
+        Guess.setSelfHorizontalPadding(0.02f, 1, 0.02f, 1);
         //Add Children
         for (int i = 0; i < Labels.Count; i++)
         {
@@ -97,6 +101,9 @@ public class CustDigitScript : MonoBehaviour
 
         Holder.setSize(new Vector2(Screen.width, Screen.height));
 
+        textSize = Results.getChild(0).GetChild(0).GetComponent<Text>().fontSize;
+        Debug.Log(textSize);
+        Guess.UI.GetComponent<Text>().fontSize = textSize;
     }
 
     public void clearImage(Texture2D img)
@@ -136,7 +143,7 @@ public class CustDigitScript : MonoBehaviour
         }
 
         //Display Guess
-        holder.GetChild(1).GetChild(1).GetComponent<Text>().text = "The Computer thinks this is a " + Labels[label];
+        holder.GetChild(1).GetChild(1).GetComponent<Text>().text = "Answer: " + Labels[label];
 
         
     }
