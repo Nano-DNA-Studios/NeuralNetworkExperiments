@@ -179,7 +179,7 @@ public class CustDigitScript : MonoBehaviour
         }
 
         //Display Guess
-        holder.GetChild(1).GetChild(2).GetComponent<Text>().text = "Answer: " + Labels[label];
+        holder.GetChild(1).GetChild(2).GetComponent<Text>().text = "Computer thinks this is a:" + Labels[label];
 
         
     }
