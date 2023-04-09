@@ -12,6 +12,7 @@ public class DigitRecScript : MonoBehaviour
 {
     [SerializeField] List<string> testingImagePaths = new List<string>();
     [SerializeField] List<string> Labels;
+    [SerializeField] RectTransform background;
     [SerializeField] RectTransform holder;
     [SerializeField] GameObject DispPrefab;
 
@@ -41,36 +42,59 @@ public class DigitRecScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    void setUI ()
+    void setUI()
     {
-        Flex Holder = new Flex(holder, 1);
+
+        Flex Background = new Flex(background, 1);
+
+        Flex BackButtonHolder = new Flex(Background.getChild(0), 1, Background);
+
+        Flex BackButton = new Flex(BackButtonHolder.getChild(0), 1, BackButtonHolder);
+
+        Flex Holder = new Flex(holder, 10, Background);
 
         Flex ImageHolder = new Flex(Holder.getChild(0), 2f, Holder);
+
         Flex Img = new Flex(ImageHolder.getChild(0), 1, ImageHolder);
 
-        Flex SideBar = new Flex(Holder.getChild(1), 1, Holder);
+        Flex SideBar = new Flex(Holder.getChild(1), 2, Holder);
 
-        Flex Results = new Flex(SideBar.getChild(0), 9, SideBar);
+        Flex TitleBar = new Flex(SideBar.getChild(0), 1, SideBar);
 
-        Flex Guess = new Flex(SideBar.getChild(1), 1, SideBar);
+        Flex Results = new Flex(SideBar.getChild(1), 9, SideBar);
 
-        Flex Buttons = new Flex(SideBar.getChild(2), 1, SideBar);
+        Flex Guess = new Flex(SideBar.getChild(2), 1, SideBar);
 
-       // Flex LoadBTN = new Flex(Buttons.getChild(0), 1, Buttons);
+        Flex Buttons = new Flex(Background.getChild(2), 1, Background);
+
+        // Flex LoadBTN = new Flex(Buttons.getChild(0), 1, Buttons);
         Flex NextBTN = new Flex(Buttons.getChild(0), 1, Buttons);
 
         Results.setSpacingFlex(1f, 1);
         Results.setSelfHorizontalPadding(0.02f, 1, 0.02f, 1);
         Guess.setSelfHorizontalPadding(0.02f, 1, 0.02f, 1);
-        //Add Children
-        for (int i = 0; i < Labels.Count; i ++)
-        {
-            GameObject ResDisp = Instantiate(DispPrefab, Results.UI);
+        TitleBar.setHorizontalPadding(0.02f, 1, 0.02f, 1);
 
-            ResultDisplay script = ResDisp.GetComponent<ResultDisplay>();
+        //Add the Explainer Text first
+
+        GameObject ResDisp = Instantiate(DispPrefab, TitleBar.UI);
+
+        ResultDisplay script = ResDisp.GetComponent<ResultDisplay>();
+
+        TitleBar.addChild(script.Result);
+
+        script.setLabel("Label");
+        script.setValue("Confidence");
+
+        //Add Children
+        for (int i = 0; i < Labels.Count; i++)
+        {
+            ResDisp = Instantiate(DispPrefab, Results.UI);
+
+            script = ResDisp.GetComponent<ResultDisplay>();
 
             Results.addChild(script.Result);
 
@@ -78,22 +102,25 @@ public class DigitRecScript : MonoBehaviour
 
         }
 
-        Holder.setSelfHorizontalPadding(0.05f, 1, 0.05f, 1);
-        Holder.setSelfVerticalPadding(0.1f, 1, 0.1f, 1);
+        // Holder.setSelfHorizontalPadding(0.05f, 1, 0.05f, 1);
+        //Holder.setSelfVerticalPadding(0.15f, 1, 0.15f, 1);
+
+        ImageHolder.setAllPadSame(0.5f, 1);
 
         Img.setSquare();
+        BackButton.setSquare();
 
-        Holder.setSize(new Vector2(Screen.width, Screen.height));
+        Background.setSize(new Vector2(Screen.width, Screen.height));
 
         textSize = Results.getChild(0).GetChild(0).GetComponent<Text>().fontSize;
         Guess.UI.GetComponent<Text>().fontSize = textSize;
 
     }
 
-    void loadNetwork ()
+    void loadNetwork()
     {
         neuro = loadNeuralNetwork("NeuralNetworks/DigitRec/DigitNetwork");
-       
+
         neuro.SetActivationFunction(Activation.GetActivationFromType(Activation.ActivationType.ReLU), Activation.GetActivationFromType(Activation.ActivationType.Softmax));
 
         for (int i = 0; i < testingImagePaths.Count; i++)
@@ -130,7 +157,7 @@ public class DigitRecScript : MonoBehaviour
         NextImage();
     }
 
-    void NextImage ()
+    void NextImage()
     {
 
         DataPoint data = allData[index];
@@ -145,11 +172,11 @@ public class DigitRecScript : MonoBehaviour
 
         for (int i = 0; i < Labels.Count; i++)
         {
-            holder.GetChild(1).GetChild(0).GetChild(i).GetComponent<ResultDisplay>().setValue(results[i]);
+            holder.GetChild(1).GetChild(1).GetChild(i).GetComponent<ResultDisplay>().setValue(results[i]);
         }
 
         //Display Guess
-        holder.GetChild(1).GetChild(1).GetComponent<Text>().text = "Answer: " + Labels[label];
+        holder.GetChild(1).GetChild(2).GetComponent<Text>().text = "Computer thinks this is a: " + Labels[label];
 
         index++;
     }
@@ -175,12 +202,12 @@ public class DigitRecScript : MonoBehaviour
 
     }
 
-    public NeuralNetwork loadNeuralNetwork (string path)
+    public NeuralNetwork loadNeuralNetwork(string path)
     {
         TextAsset json = Resources.Load<TextAsset>(path);
 
         return JsonUtility.FromJson<NeuralNetwork>(json.text);
-    }    
+    }
 
     public DataPointFile loadDataFile(string path)
     {
@@ -251,7 +278,7 @@ public class DigitRecScript : MonoBehaviour
 
     }
 
-    void backToMenu ()
+    void backToMenu()
     {
         SceneManager.LoadScene("Menu", LoadSceneMode.Single);
     }

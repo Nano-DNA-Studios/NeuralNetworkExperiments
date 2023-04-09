@@ -52,7 +52,10 @@ public class CardScript : MonoBehaviour
 
     public void setImage (Texture2D sprite)
     {
-       image.sprite = Sprite.Create(sprite, new Rect(new Vector2(0, 0), new Vector2(sprite.width, sprite.height)), new Vector2(0, 0));
+        
+        image.sprite = Sprite.Create(sprite, new Rect(new Vector2(0, 0), new Vector2(sprite.width, sprite.height)), new Vector2(0, 0));
+
+        
     }
 
     public void setName (string text)
@@ -60,9 +63,9 @@ public class CardScript : MonoBehaviour
         name.text = text;
     }
 
-    public void setColor (Texture2D sprite)
+    public void setColor (Sprite sprite)
     {
-        background.sprite = Sprite.Create(sprite, new Rect(new Vector2(0, 0), new Vector2(sprite.width, sprite.height)), new Vector2(0, 0));
+        background.sprite = sprite;
     }
 
 

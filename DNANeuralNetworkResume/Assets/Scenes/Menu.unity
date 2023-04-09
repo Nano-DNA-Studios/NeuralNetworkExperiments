@@ -185,7 +185,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 100
     m_FontStyle: 0
-    m_BestFit: 1
+    m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 100
     m_Alignment: 4
@@ -805,8 +805,8 @@ MonoBehaviour:
   - Digits
   - Custom Digits
   backgrounds:
-  - {fileID: 2800000, guid: de79751c1c35b8142bd2e9bb2b21e8d3, type: 3}
-  - {fileID: 2800000, guid: fb9935ba390e89743b7dc662ff62d9cb, type: 3}
+  - {fileID: 21300000, guid: 4a4a4ab9708f97c43b26b420074f2c24, type: 3}
+  - {fileID: 21300000, guid: bf420ee9f7a9eae4fa3a19ef4fc804ad, type: 3}
   icon:
   - {fileID: 2800000, guid: 9c80d602344045e4583c1b828bdc69bd, type: 3}
   - {fileID: 2800000, guid: 6e7c685183c77f641aa33897c0d2df13, type: 3}

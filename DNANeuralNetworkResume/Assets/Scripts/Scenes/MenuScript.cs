@@ -10,7 +10,7 @@ public class MenuScript : MonoBehaviour
     [SerializeField] RectTransform holder;
 
     [SerializeField] List<string> sceneNames;
-    [SerializeField] List<Texture2D> backgrounds;
+    [SerializeField] List<Sprite> backgrounds;
     [SerializeField] List<Texture2D> icon;
     [SerializeField] List<string> sceneName;
 

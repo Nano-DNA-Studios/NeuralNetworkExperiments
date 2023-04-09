@@ -49,6 +49,11 @@ public class ResultDisplay : MonoBehaviour
     public void setValue (double val)
     {
         value.text = (float)Mathf.FloorToInt((float)val * 1000000) / 10000 + "%";
+    }   
+    
+    public void setValue (string val)
+    {
+        value.text = val;
     }
 
 }
