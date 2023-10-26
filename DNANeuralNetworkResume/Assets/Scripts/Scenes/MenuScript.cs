@@ -9,7 +9,7 @@ public class MenuScript : MonoBehaviour
 {
     [SerializeField] RectTransform holder;
 
-    [SerializeField] List<string> sceneNames;
+    [SerializeField] List<string> cardNames;
     [SerializeField] List<Sprite> backgrounds;
     [SerializeField] List<Texture2D> icon;
     [SerializeField] List<string> sceneName;
@@ -22,7 +22,7 @@ public class MenuScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        setUI();
+        SetUI();
     }
 
     // Update is called once per frame
@@ -31,7 +31,10 @@ public class MenuScript : MonoBehaviour
         
     }
 
-    void setUI ()
+    /// <summary>
+    /// Sets the UI for the main menu
+    /// </summary>
+    void SetUI ()
     {
         Flex Holder = new Flex(holder, 1);
 
@@ -51,14 +54,24 @@ public class MenuScript : MonoBehaviour
         int spacingX = Mathf.FloorToInt((GridView.size.x - (500 * 3)) / 2);
         GridView.UI.GetComponent<GridLayoutGroup>().spacing = new Vector2(spacingX, 100);
 
+        AddCards(GridView);
+
+    }
+
+    /// <summary>
+    /// Adds the Neural Network Cards 
+    /// </summary>
+    /// <param name="GridView"></param>
+    void AddCards (Flex GridView)
+    {
         //Add Children and set sizes
-        for (int i = 0; i < sceneNames.Count; i ++)
+        for (int i = 0; i < cardNames.Count; i++)
         {
             GameObject Card = Instantiate(cardPrefab, GridView.UI);
 
             CardScript script = Card.GetComponent<CardScript>();
 
-            script.setName(sceneNames[i]);
+            script.setName(cardNames[i]);
             script.setImage(icon[i]);
             script.setColor(backgrounds[i]);
 
@@ -73,6 +86,5 @@ public class MenuScript : MonoBehaviour
             });
 
         }
-
     }
 }

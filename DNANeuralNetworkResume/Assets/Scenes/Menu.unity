@@ -801,18 +801,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holder: {fileID: 911155425}
-  sceneNames:
-  - Digits
+  cardNames:
+  - Premade Digits
   - Custom Digits
+  - GPUMatrix Digits
   backgrounds:
-  - {fileID: 21300000, guid: 4a4a4ab9708f97c43b26b420074f2c24, type: 3}
-  - {fileID: 21300000, guid: bf420ee9f7a9eae4fa3a19ef4fc804ad, type: 3}
+  - {fileID: 21300000, guid: de79751c1c35b8142bd2e9bb2b21e8d3, type: 3}
+  - {fileID: 21300000, guid: fb9935ba390e89743b7dc662ff62d9cb, type: 3}
+  - {fileID: 21300000, guid: 5709fac87b27cb44abaa228b7b2fc46f, type: 3}
   icon:
   - {fileID: 2800000, guid: 9c80d602344045e4583c1b828bdc69bd, type: 3}
   - {fileID: 2800000, guid: 6e7c685183c77f641aa33897c0d2df13, type: 3}
+  - {fileID: 2800000, guid: 85df3afd712bc0742b1c24db02273b6c, type: 3}
   sceneName:
   - Digit
   - CustDigit
+  - MatrixMult
   cardPrefab: {fileID: 828801204384009735, guid: 666874e1b355fc24dadec7aaf8f4ebb8, type: 3}
 --- !u!1 &1439918841
 GameObject:

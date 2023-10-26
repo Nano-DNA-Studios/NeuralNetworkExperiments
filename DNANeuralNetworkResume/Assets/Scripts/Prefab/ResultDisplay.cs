@@ -17,7 +17,6 @@ public class ResultDisplay : MonoBehaviour
     private void Awake()
     {
         setUI();
-        
     }
 
     // Start is called before the first frame update

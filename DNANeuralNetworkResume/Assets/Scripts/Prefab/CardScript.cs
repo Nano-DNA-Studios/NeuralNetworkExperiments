@@ -68,7 +68,4 @@ public class CardScript : MonoBehaviour
         background.sprite = sprite;
     }
 
-
-
-
 }

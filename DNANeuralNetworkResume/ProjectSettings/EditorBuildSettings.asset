@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CustDigit.unity
     guid: 8ba790bab9cd19e428e50f25c83513db
+  - enabled: 1
+    path: Assets/Scenes/MatrixMult.unity
+    guid: c467173ec795e5e49bb9ceb135380a4b
   m_configObjects: {}

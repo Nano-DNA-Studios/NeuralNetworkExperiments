@@ -20,6 +20,7 @@ public class DrawingProcessor : MonoBehaviour, IPointerDownHandler, IDragHandler
     Vector2 max;
     Vector2 size;
 
+    bool IsCustDigit;
 
     // Start is called before the first frame update
     void Start()
@@ -29,8 +30,15 @@ public class DrawingProcessor : MonoBehaviour, IPointerDownHandler, IDragHandler
         Rect rec = new Rect(0, 0, image.width, image.height);
         this.GetComponent<Image>().sprite = Sprite.Create(image, rec, new Vector2(0.5f, 0.5f), 1);
 
-        Camera.main.GetComponent<CustDigitScript>().clearImage(image);
+        if (Camera.main.GetComponent<CustDigitScript>() != null)
+            IsCustDigit = true;
+        else
+            IsCustDigit = false;
 
+        if (IsCustDigit)
+            Camera.main.GetComponent<CustDigitScript>().clearImage(image);
+        else
+            Camera.main.GetComponent<MatrixNeuralNetwork>().clearImage(image);
     }
 
     // Update is called once per frame
@@ -51,8 +59,6 @@ public class DrawingProcessor : MonoBehaviour, IPointerDownHandler, IDragHandler
         //Do I need the draw?
         if (draw)
         {
-
-            
             //Probably coordinated
 
             Vector2 position = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - min;
@@ -75,7 +81,10 @@ public class DrawingProcessor : MonoBehaviour, IPointerDownHandler, IDragHandler
                     this.GetComponent<Image>().sprite = Sprite.Create(image, rec, new Vector2(0.5f, 0.5f), 1);
 
                     //Convert to Data Point and have Network Guess
-                    Camera.main.GetComponent<CustDigitScript>().NextImage(image);
+                    if (IsCustDigit)
+                        Camera.main.GetComponent<CustDigitScript>().NextImage(image);
+                    else
+                        Camera.main.GetComponent<MatrixNeuralNetwork>().NextImage(image);
                 }
             }
         }
@@ -99,7 +108,4 @@ public class DrawingProcessor : MonoBehaviour, IPointerDownHandler, IDragHandler
         imgSize = new Vector2(image.width, image.height);
 
     }
-
-   
-
 }

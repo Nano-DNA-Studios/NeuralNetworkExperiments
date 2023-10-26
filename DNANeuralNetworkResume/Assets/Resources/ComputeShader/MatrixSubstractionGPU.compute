@@ -1,0 +1,15 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+//Script to parralellize Matrix Substractions
+
+RWStructuredBuffer<double> matrixAValues;
+RWStructuredBuffer<double> matrixBValues;
+RWStructuredBuffer<double> newMatrixValues;
+
+//Adds the values from each matrix
+[numthreads(1024, 1, 1)]
+void CSMain(uint id : SV_DispatchThreadID)
+{
+    newMatrixValues[id.x] = matrixAValues[id.x] + matrixBValues[id.x];
+}
