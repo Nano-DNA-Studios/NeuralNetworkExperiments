@@ -167,19 +167,31 @@ public class MatrixNeuralNetwork : MonoBehaviour
 
     public void NextImage(Texture2D image)
     {
-        count++;
+        string message;
+        string GPU = DNAMatrix.matrixMultFloatScript != null ? "Active" : "Inactive";
+
+        message = GPU;
+        //Display Guess
+        holder.GetChild(1).GetChild(2).GetComponent<Text>().text = " GPU:" + GPU;
+
         DNADataPoint data = imageToData(image, 0, 10);
-        
+
+        message += " Converted";
+        holder.GetChild(1).GetChild(2).GetComponent<Text>().text = message;
+
         (int label, DNAMatrix results) = neuro.Classify(data.inputs);
+
+        message += " Classified";
+        holder.GetChild(1).GetChild(2).GetComponent<Text>().text = message;
+        
 
         for (int i = 0; i < 10; i++)
         {
             holder.GetChild(1).GetChild(1).GetChild(i).GetComponent<ResultDisplay>().setValue(results[i]);
         }
         
-        string GPU = DNAMatrix.matrixMultScript != null ? "Active" : "Inactive";
         //Display Guess
-        holder.GetChild(1).GetChild(2).GetComponent<Text>().text = "Computer thinks this is a:" + Labels[label] + " GPU:" + count;
+        holder.GetChild(1).GetChild(2).GetComponent<Text>().text = "Computer thinks this is a:" + Labels[label] + " GPU:" + GPU;
 
     }
 

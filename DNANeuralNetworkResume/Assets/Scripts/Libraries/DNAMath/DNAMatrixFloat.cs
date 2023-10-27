@@ -12,7 +12,7 @@ namespace DNAMath
     /// Custom Matrix Class developped for working on the GPU and with DNANeuralNetworks
     /// </summary>
     [System.Serializable]
-    public class DNAMatrix
+    public class DNAMatrixFloat
     {
         // 0--------> Width
         // |
@@ -22,7 +22,7 @@ namespace DNAMath
 
         public struct GPUMatrix
         {
-            public double[] Values;
+            public float[] Values;
             public int Height;
             public int Width;
         }
@@ -31,11 +31,6 @@ namespace DNAMath
         /// Shader Script that runs Matrix Multiplication on the GPU
         /// </summary>
         public static ComputeShader matrixMultScript;
-
-        /// <summary>
-        /// Shader Script that runs Matrix Multiplication on the GPU using Floats
-        /// </summary>
-        public static ComputeShader matrixMultFloatScript;
 
         /// <summary>
         /// Shader Script that runs Matrix Addition on the GPU
@@ -53,10 +48,7 @@ namespace DNAMath
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         public static void loadAssets()
         {
-            matrixMultScript = Resources.Load<ComputeShader>("ComputeShader/MatrixMultiplicationGPU");
-            matrixMultFloatScript = Resources.Load<ComputeShader>("ComputeShader/MatrixMultiplicationGPUFloat");
-            matrixAdditionScript = Resources.Load<ComputeShader>("ComputeShader/MatrixAdditionGPU");
-            matrixSubstractionScript = Resources.Load<ComputeShader>("ComputeShader/MatrixSubstractionGPU");
+          
         }
 
         /// <summary>
@@ -90,12 +82,12 @@ namespace DNAMath
         /// A list of all values contained in the matrix
         /// </summary>
         [SerializeField]
-        private double[] _values;
+        private float[] _values;
 
         /// <summary>
         /// A list of all values contained in the matrix
         /// </summary>
-        public double[] Values
+        public float[] Values
         {
             get
             {
@@ -107,30 +99,30 @@ namespace DNAMath
             }
         }
 
+        public DNAMatrixFloat (DNAMatrix matrix)
+        {
+            this.Width = matrix.Width;
+            this.Height = matrix.Height;
+
+            _values = new float[Width * Height];
+
+            for (int i = 0; i < matrix.Length; i ++)
+            {
+                _values[i] = (float)matrix[i];
+            }
+        }
+
         /// <summary>
         /// Constructor function initializing the Matrix
         /// </summary>
         /// <param name="height"></param>
         /// <param name="width"></param>
-        public DNAMatrix(int height, int width)
+        public DNAMatrixFloat(int height, int width)
         {
             this.Width = width;
             this.Height = height;
 
-            _values = new double[width * height];
-        }
-
-        public DNAMatrix(DNAMatrixFloat matrix)
-        {
-            this.Width = matrix.Width;
-            this.Height = matrix.Height;
-
-            _values = new double[Width * Height];
-
-            for (int i = 0; i < matrix.Length; i++)
-            {
-                _values[i] = (double)matrix[i];
-            }
+            _values = new float[width * height];
         }
 
         /// <summary>
@@ -139,7 +131,7 @@ namespace DNAMath
         /// <param name="height"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        public double this[int height, int width]
+        public float this[int height, int width]
         {
             get
             {
@@ -156,7 +148,7 @@ namespace DNAMath
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public double this[int index]
+        public float this[int index]
         {
             get
             {
@@ -174,15 +166,15 @@ namespace DNAMath
         /// <param name="index"></param>
         /// <param name="idk"></param>
         /// <returns></returns>
-        public double[] this[int index, bool row]
+        public float[] this[int index, bool row]
         {
             get
             {
-                double[] vector;
+                float[] vector;
                 if (row)
                 {
                     //Get a row
-                    vector = new double[Width];
+                    vector = new float[Width];
 
                     for (int i = 0; i < Width; i++)
                     {
@@ -193,7 +185,7 @@ namespace DNAMath
                 else
                 {
                     //Get a column
-                    vector = new double[Height];
+                    vector = new float[Height];
 
                     for (int i = 0; i < Height; i++)
                     {
@@ -212,9 +204,9 @@ namespace DNAMath
         /// <param name="height"></param>
         /// <param name="width"></param>
         /// <returns></returns>
-        public static DNAMatrix Increment(int height, int width)
+        public static DNAMatrixFloat Increment(int height, int width)
         {
-            DNAMatrix matrix = new DNAMatrix(height, width);
+            DNAMatrixFloat matrix = new DNAMatrixFloat(height, width);
 
             for (int i = 0; i < width * height; i++)
             {
@@ -230,7 +222,7 @@ namespace DNAMath
         /// <param name="heightIndex"></param>
         /// <param name="widthIndex"></param>
         /// <param name="val"></param>
-        public void SetValue(int heightIndex, int widthIndex, double val)
+        public void SetValue(int heightIndex, int widthIndex, float val)
         {
             this._values[GetFlatIndex(heightIndex, widthIndex)] = val;
         }
@@ -241,7 +233,7 @@ namespace DNAMath
         /// <param name="heightIndex"></param>
         /// <param name="widthIndex"></param>
         /// <param name="val"></param>
-        public void AddValue(int heightIndex, int widthIndex, double val)
+        public void AddValue(int heightIndex, int widthIndex, float val)
         {
             this._values[GetFlatIndex(heightIndex, widthIndex)] += val;
         }
@@ -252,7 +244,7 @@ namespace DNAMath
         /// <param name="heightIndex"></param>
         /// <param name="widthIndex"></param>
         /// <returns></returns>
-        public double GetValue(int heightIndex, int widthIndex)
+        public float GetValue(int heightIndex, int widthIndex)
         {
             return _values[GetFlatIndex(heightIndex, widthIndex)];
         }
@@ -289,7 +281,7 @@ namespace DNAMath
         /// <param name="index"></param>
         /// <param name="mat"></param>
         /// <returns></returns>
-        public static (int height, int width) GetIndex(int index, DNAMatrix mat)
+        public static (int height, int width) GetIndex(int index, DNAMatrixFloat mat)
         {
             int height = index / mat.Width;
             int width = index % mat.Width;
@@ -303,9 +295,9 @@ namespace DNAMath
         /// <param name="vector1"></param>
         /// <param name="vector2"></param>
         /// <returns></returns>
-        double DotProduct(double[] vector1, double[] vector2)
+        float DotProduct(float[] vector1, float[] vector2)
         {
-            double value = 0;
+            float value = 0;
 
             if (vector1.Length == vector2.Length)
             {
@@ -324,9 +316,9 @@ namespace DNAMath
         /// <param name="vector1"></param>
         /// <param name="vector2"></param>
         /// <returns></returns>
-        static double DotProductStatic(double[] vector1, double[] vector2)
+        static float DotProductStatic(float[] vector1, float[] vector2)
         {
-            double value = 0;
+            float value = 0;
 
             if (vector1.Length == vector2.Length)
             {
@@ -342,10 +334,10 @@ namespace DNAMath
         /// <summary>
         /// Transposes the matrix
         /// </summary>
-        public DNAMatrix Transpose()
+        public DNAMatrixFloat Transpose()
         {
 
-            DNAMatrix newMat = new DNAMatrix(this.Width, this.Height);
+            DNAMatrixFloat newMat = new DNAMatrixFloat(this.Width, this.Height);
 
             for (int width = 0; width < this.Width; width++)
             {
@@ -364,17 +356,17 @@ namespace DNAMath
         /// <param name="matrixA"></param>
         /// <param name="matrixB"></param>
         /// <returns></returns>
-        public static DNAMatrix operator +(DNAMatrix matrixA, DNAMatrix matrixB)
+        public static DNAMatrixFloat operator +(DNAMatrixFloat matrixA, DNAMatrixFloat matrixB)
         {
-            DNAMatrix newMat = new DNAMatrix(0, 0);
+            DNAMatrixFloat newMat = new DNAMatrixFloat(0, 0);
 
-           // if (matrixAdditionScript != null)
+            // if (matrixAdditionScript != null)
             //    newMat = matrixAdditionGPU(matrixA, matrixB);
             //else
-           // {
+            // {
             if (matrixA.Height == matrixB.Height && matrixA.Width == matrixB.Width)
             {
-                newMat = new DNAMatrix(matrixA.Height, matrixA.Width);
+                newMat = new DNAMatrixFloat(matrixA.Height, matrixA.Width);
 
                 for (int i = 0; i < matrixA.Values.Length; i++)
                 {
@@ -395,13 +387,13 @@ namespace DNAMath
         /// <param name="matrixA"></param>
         /// <param name="matrixB"></param>
         /// <returns></returns>
-        public static DNAMatrix operator -(DNAMatrix matrixA, DNAMatrix matrixB)
+        public static DNAMatrixFloat operator -(DNAMatrixFloat matrixA, DNAMatrixFloat matrixB)
         {
-            DNAMatrix newMat = new DNAMatrix(0, 0);
+            DNAMatrixFloat newMat = new DNAMatrixFloat(0, 0);
 
             if (matrixA.Height == matrixB.Height && matrixA.Width == matrixB.Width)
             {
-                newMat = new DNAMatrix(matrixA.Height, matrixA.Width);
+                newMat = new DNAMatrixFloat(matrixA.Height, matrixA.Width);
 
                 for (int i = 0; i < matrixA.Values.Length; i++)
                 {
@@ -422,20 +414,18 @@ namespace DNAMath
         /// <param name="matrixA"></param>
         /// <param name="matrixB"></param>
         /// <returns></returns>
-        public static DNAMatrix operator *(DNAMatrix matrixA, DNAMatrix matrixB)
+        public static DNAMatrixFloat operator *(DNAMatrixFloat matrixA, DNAMatrixFloat matrixB)
         {
-            DNAMatrix newMat = new DNAMatrix(0, 0);
+            DNAMatrixFloat newMat = new DNAMatrixFloat(0, 0);
 
-            if (matrixMultScript != null && SystemInfo.deviceType == DeviceType.Desktop)
+            if (matrixMultScript != null)
                 newMat = multMatrixGPU(matrixA, matrixB);
-            else if (matrixMultScript != null && SystemInfo.deviceType == DeviceType.Handheld)
-                newMat = multMatrixGPUFloat(matrixA, matrixB);
             else
             {
                 //Check if matrixA Width is equal to matrixB Height
                 if (matrixA.Width == matrixB.Height)
                 {
-                    newMat = new DNAMatrix(matrixA.Height, matrixB.Width);
+                    newMat = new DNAMatrixFloat(matrixA.Height, matrixB.Width);
 
                     System.Threading.Tasks.Parallel.For(0, newMat.Values.Length, (index) =>
                     {
@@ -459,11 +449,11 @@ namespace DNAMath
         /// <param name="matrixA"></param>
         /// <param name="factor"></param>
         /// <returns></returns>
-        public static DNAMatrix operator *(DNAMatrix matrixA, double factor)
+        public static DNAMatrixFloat operator *(DNAMatrixFloat matrixA, float factor)
         {
-            DNAMatrix newMat = new DNAMatrix(0, 0);
+            DNAMatrixFloat newMat = new DNAMatrixFloat(0, 0);
 
-            newMat = new DNAMatrix(matrixA.Height, matrixA.Width);
+            newMat = new DNAMatrixFloat(matrixA.Height, matrixA.Width);
 
             for (int i = 0; i < matrixA.Values.Length; i++)
             {
@@ -479,19 +469,19 @@ namespace DNAMath
         /// <param name="matrixA"></param>
         /// <param name="matrixB"></param>
         /// <returns></returns>
-        public static DNAMatrix multMatrixGPU(DNAMatrix matrixA, DNAMatrix matrixB)
+        public static DNAMatrixFloat multMatrixGPU(DNAMatrixFloat matrixA, DNAMatrixFloat matrixB)
         {
-            DNAMatrix newMat = new DNAMatrix(0, 0);
+            DNAMatrixFloat newMat = new DNAMatrixFloat(0, 0);
             if (matrixA.Width == matrixB.Height)
             {
-                newMat = new DNAMatrix(matrixA.Height, matrixB.Width);
+                newMat = new DNAMatrixFloat(matrixA.Height, matrixB.Width);
 
                 ComputeShader computeShader = matrixMultScript;
 
                 // Create compute buffers
-                ComputeBuffer matrixAVals = new ComputeBuffer(matrixA.Length, sizeof(double));
-                ComputeBuffer matrixBVals = new ComputeBuffer(matrixB.Length, sizeof(double));
-                ComputeBuffer newMatrixVals = new ComputeBuffer(newMat.Length, sizeof(double));
+                ComputeBuffer matrixAVals = new ComputeBuffer(matrixA.Length, sizeof(float));
+                ComputeBuffer matrixBVals = new ComputeBuffer(matrixB.Length, sizeof(float));
+                ComputeBuffer newMatrixVals = new ComputeBuffer(newMat.Length, sizeof(float));
 
                 ComputeBuffer newMatrixDim = new ComputeBuffer(1, sizeof(uint) * 2);
                 ComputeBuffer matrixADim = new ComputeBuffer(1, sizeof(uint) * 2);
@@ -536,93 +526,27 @@ namespace DNAMath
         }
 
         /// <summary>
-        /// Handles a Matrix Multiplication by handing it off to the GPU, this makes it crazy fast
-        /// </summary>
-        /// <param name="matrixA"></param>
-        /// <param name="matrixB"></param>
-        /// <returns></returns>
-        public static DNAMatrix multMatrixGPUFloat(DNAMatrix matrixA, DNAMatrix matrixB)
-        {
-            DNAMatrix newMat = new DNAMatrix(0, 0);
-            if (matrixA.Width == matrixB.Height)
-            {
-                newMat = new DNAMatrix(matrixA.Height, matrixB.Width);
-
-                ComputeShader computeShader = matrixMultFloatScript;
-
-                // Create compute buffers
-                ComputeBuffer matrixAVals = new ComputeBuffer(matrixA.Length, sizeof(float));
-                ComputeBuffer matrixBVals = new ComputeBuffer(matrixB.Length, sizeof(float));
-                ComputeBuffer newMatrixVals = new ComputeBuffer(newMat.Length, sizeof(float));
-
-                ComputeBuffer newMatrixDim = new ComputeBuffer(1, sizeof(uint) * 2);
-                ComputeBuffer matrixADim = new ComputeBuffer(1, sizeof(uint) * 2);
-                ComputeBuffer matrixBDim = new ComputeBuffer(1, sizeof(uint) * 2);
-
-
-                matrixAVals.SetData(new DNAMatrixFloat(matrixA).Values);
-                matrixBVals.SetData(new DNAMatrixFloat(matrixB).Values);
-
-                matrixADim.SetData(new uint[] { (uint)matrixA.Width, (uint)matrixA.Height });
-                matrixBDim.SetData(new uint[] { (uint)matrixB.Width, (uint)matrixB.Height });
-                newMatrixDim.SetData(new uint[] { (uint)newMat.Width, (uint)newMat.Height });
-
-
-                computeShader.SetBuffer(0, "matrixA", matrixAVals);
-                computeShader.SetBuffer(0, "matrixB", matrixBVals);
-                computeShader.SetBuffer(0, "newMatrix", newMatrixVals);
-
-                computeShader.SetBuffer(0, "matrixDimsA", matrixADim);
-                computeShader.SetBuffer(0, "matrixDimsB", matrixBDim);
-                computeShader.SetBuffer(0, "newMatrixDims", newMatrixDim);
-
-                //Calculate
-                computeShader.Dispatch(0, newMat.Width, newMat.Height, 1);
-
-                DNAMatrixFloat floatMat = new DNAMatrixFloat(matrixA.Height, matrixB.Width);
-
-                //Receaive Result
-                newMatrixVals.GetData(floatMat.Values);
-
-                newMat = new DNAMatrix(floatMat);
-
-                //Get rid of memory
-                matrixAVals.Dispose();
-                matrixBVals.Dispose();
-                newMatrixVals.Dispose();
-
-                matrixADim.Dispose();
-                matrixBDim.Dispose();
-                newMatrixDim.Dispose();
-            }
-            else
-                Debug.Log("Error, Dimensions don't match");
-
-            return newMat;
-        }
-
-        /// <summary>
         /// Handles Matrix Additions through the GPU
         /// </summary>
         /// <param name="matrixA"></param>
         /// <param name="matrixB"></param>
         /// <returns></returns>
-        public static DNAMatrix matrixAdditionGPU(DNAMatrix matrixA, DNAMatrix matrixB)
+        public static DNAMatrixFloat matrixAdditionGPU(DNAMatrixFloat matrixA, DNAMatrixFloat matrixB)
         {
-            DNAMatrix newMat = new DNAMatrix(0, 0);
+            DNAMatrixFloat newMat = new DNAMatrixFloat(0, 0);
 
             if (_SameDimension(matrixA, matrixB))
             {
                 ComputeShader computeShader = matrixAdditionScript;
-                newMat = new DNAMatrix(matrixA.Height, matrixB.Width);
+                newMat = new DNAMatrixFloat(matrixA.Height, matrixB.Width);
 
                 /*
                 int sizeOfDimensions = sizeof(int) * 2;
-                int sizeOfDouble = sizeof(double);
+                int sizeOffloat = sizeof(float);
 
-                int sizeOfMatrixAValues = matrixA.Length * sizeOfDouble;
-                int sizeOfMatrixBValues = matrixB.Length * sizeOfDouble;
-                int sizeOfMatrixOutputValues = newMat.Length * sizeOfDouble;
+                int sizeOfMatrixAValues = matrixA.Length * sizeOffloat;
+                int sizeOfMatrixBValues = matrixB.Length * sizeOffloat;
+                int sizeOfMatrixOutputValues = newMat.Length * sizeOffloat;
 
                 int totalSizeA = sizeOfDimensions + sizeOfMatrixAValues;
                 int totalSizeB = sizeOfDimensions + sizeOfMatrixBValues;
@@ -635,13 +559,13 @@ namespace DNAMath
 
 
 
-                ComputeBuffer matrixAValues = new ComputeBuffer(matrixA.Values.Length, sizeof(double));
+                ComputeBuffer matrixAValues = new ComputeBuffer(matrixA.Values.Length, sizeof(float));
                 matrixAValues.SetData(matrixA.Values);
 
-                ComputeBuffer matrixBValues = new ComputeBuffer(matrixB.Values.Length, sizeof(double));
+                ComputeBuffer matrixBValues = new ComputeBuffer(matrixB.Values.Length, sizeof(float));
                 matrixBValues.SetData(matrixB.Values);
 
-                ComputeBuffer newMatrixValues = new ComputeBuffer(newMat.Values.Length, sizeof(double));
+                ComputeBuffer newMatrixValues = new ComputeBuffer(newMat.Values.Length, sizeof(float));
 
                 computeShader.SetBuffer(0, "matrixAValues", matrixAValues);
                 computeShader.SetBuffer(0, "matrixBValues", matrixBValues);
@@ -665,22 +589,22 @@ namespace DNAMath
             return newMat;
         }
 
-        public static DNAMatrix matrixSubstractionGPU(DNAMatrix matrixA, DNAMatrix matrixB)
+        public static DNAMatrixFloat matrixSubstractionGPU(DNAMatrixFloat matrixA, DNAMatrixFloat matrixB)
         {
-            DNAMatrix newMat = new DNAMatrix(0, 0);
+            DNAMatrixFloat newMat = new DNAMatrixFloat(0, 0);
 
             if (_SameDimension(matrixA, matrixB))
             {
                 ComputeShader computeShader = matrixSubstractionScript;
-                newMat = new DNAMatrix(matrixA.Height, matrixB.Width);
+                newMat = new DNAMatrixFloat(matrixA.Height, matrixB.Width);
 
-                ComputeBuffer matrixAValues = new ComputeBuffer(matrixA.Values.Length, sizeof(double));
+                ComputeBuffer matrixAValues = new ComputeBuffer(matrixA.Values.Length, sizeof(float));
                 matrixAValues.SetData(matrixA.Values);
 
-                ComputeBuffer matrixBValues = new ComputeBuffer(matrixB.Values.Length, sizeof(double));
+                ComputeBuffer matrixBValues = new ComputeBuffer(matrixB.Values.Length, sizeof(float));
                 matrixBValues.SetData(matrixB.Values);
 
-                ComputeBuffer newMatrixValues = new ComputeBuffer(newMat.Values.Length, sizeof(double));
+                ComputeBuffer newMatrixValues = new ComputeBuffer(newMat.Values.Length, sizeof(float));
                 newMatrixValues.SetData(newMat.Values);
 
                 computeShader.SetBuffer(0, "matrixAValues", matrixAValues);
@@ -717,7 +641,7 @@ namespace DNAMath
         /// <param name="matrixA"></param>
         /// <param name="matrixB"></param>
         /// <returns></returns>
-        private static bool _SameDimension(DNAMatrix matrixA, DNAMatrix matrixB)
+        private static bool _SameDimension(DNAMatrixFloat matrixA, DNAMatrixFloat matrixB)
         {
             if (matrixA.Height == matrixB.Height && matrixA.Width == matrixB.Width)
                 return true;
@@ -749,4 +673,5 @@ namespace DNAMath
         }
     }
 }
+
 
