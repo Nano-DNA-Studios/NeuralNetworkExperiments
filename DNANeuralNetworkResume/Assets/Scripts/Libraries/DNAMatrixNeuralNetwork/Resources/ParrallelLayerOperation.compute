@@ -1,0 +1,143 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct MatrixDimensions
+{
+    int width;
+    int height;
+    
+    int GetLength()
+    {
+        return width * height;
+    }
+};
+
+//Weights
+RWStructuredBuffer<MatrixDimensions> dimensions; //[weights, bias, inputs]
+
+RWStructuredBuffer<double> weights;
+
+//Inputs
+RWStructuredBuffer<double> inputs;
+
+//Bias
+RWStructuredBuffer<double> bias;
+
+//Weighted inputs
+RWStructuredBuffer<double> weightedInputs;
+
+//Activation
+RWStructuredBuffer<double> activation;
+
+//Activation Function Type
+RWStructuredBuffer<int> activationFunction;
+
+//Exponential Sum (For Softmax)
+float expSum = 0;
+
+//Sigmoid Activation Function
+double Sigmoid(double value)
+{
+    return 1.0 / (1 + exp(-value));
+}
+
+//TanH Activation Function
+double TanH(double value)
+{
+    double e2 = exp(2 * value);
+    return (e2 - 1) / (e2 + 1);
+}
+
+//ReLu Activation Function
+double ReLu(double value)
+{
+    return max(0, value);
+}
+
+//SiLu Activation Function
+double SiLu(double value)
+{
+    return value / (1 + exp(-value));
+}
+
+//Softmax Activation Function
+double Softmax(double value)
+{
+    return exp(value) / expSum;
+}
+
+//Applies certain activation function
+double ApplyActivation(double value)
+{
+    double activation = 0;
+    
+    switch (activationFunction[0])
+    {
+        case 1:
+            activation = Sigmoid(value);
+            break;
+        case 2:
+            activation = TanH(value);
+            break;
+        case 3:
+            activation = ReLu(value);
+            break;
+        case 4:
+            activation = SiLu(value);
+            break;
+        case 5:
+            activation = Softmax(value);
+            break;
+
+    }
+
+    return activation;
+
+}
+
+int GetIndex(int row, int column)
+{
+    return row * dimensions[1].width + column;
+}
+
+int GetMatrixOffset(int matrixIndex)
+{
+    return matrixIndex * (dimensions[2].GetLength());
+}
+
+///Performs the dot product necessary for the matrix multiplication
+double DotProduct(int row, int column, int matrixIndex)
+{
+    double sum = 0;
+     // Perform matrix multiplication
+    for (int i = 0; i < dimensions[0].width; ++i)
+        sum += weights[row * dimensions[0].width + i] * inputs[matrixIndex * (dimensions[2].GetLength()) + i * dimensions[2].width + column]; 
+    
+    return sum;
+}
+
+//Performs the entire layer operation
+double LayerOperation(int row, int column, int matrixIndex)
+{
+    double innerProduct = DotProduct(row, column, matrixIndex);
+    
+    innerProduct += bias[row * dimensions[1].width + column];
+    
+    //Get Dot product
+    weightedInputs[matrixIndex * dimensions[1].GetLength() + row * dimensions[1].width + column] = innerProduct;
+    
+    expSum += exp(innerProduct);
+    
+    //Apply activation
+    return ApplyActivation(innerProduct);
+}
+
+[numthreads(1, 1, 1)]
+void CSMain(uint3 DispatchThreadID : SV_DispatchThreadID)
+{
+    int row = DispatchThreadID.y;
+    int col = DispatchThreadID.x;
+    int matrixIndex = DispatchThreadID.z;
+    
+    activation[matrixIndex * dimensions[1].GetLength() + row * dimensions[1].width + col] = LayerOperation(row, col, matrixIndex);
+}

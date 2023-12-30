@@ -60,9 +60,9 @@ public class MatrixNeuralNetwork : MonoBehaviour
     void LoadNetwork()
     {
         //Load Neural Network
-        neuro = loadNeuralNetwork("NeuralNetworks/MatrixGPUNeuro/MatrixNeuroZeroNine128");
+        neuro = loadNeuralNetwork("NeuralNetworks/MatrixGPUNeuro/ActivationTest");
 
-        neuro.SetActivationFunction(Activation.GetActivationFromType(Activation.ActivationType.Sigmoid), Activation.GetActivationFromType(Activation.ActivationType.Sigmoid));
+        neuro.InitializeFromLoad();
     }
 
     void setUI()

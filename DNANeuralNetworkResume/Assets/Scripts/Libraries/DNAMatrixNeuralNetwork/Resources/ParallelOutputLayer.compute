@@ -1,0 +1,159 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct MatrixDimensions
+{
+    int width;
+    int height;
+    
+    int GetLength()
+    {
+        return width * height;
+    }
+};
+
+//Dimensions
+RWStructuredBuffer<MatrixDimensions> dimensions; //Output Dimension
+
+//Weighted Inputs
+RWStructuredBuffer<double> weightedInputs;
+
+//Activation
+RWStructuredBuffer<double> activations;
+
+//Expected Outputs
+RWStructuredBuffer<double> expectedOutputs;
+
+//Node Value (Output)
+RWStructuredBuffer<double> nodeValues;
+
+//List of ints to determine derivative types
+RWStructuredBuffer<int> derivativeType; //Cost , Activation
+
+//Exponential Sum
+float expSum = 0;
+
+int GetIndex(int row, int column)
+{
+    return row * dimensions[0].width + column;
+}
+
+int GetMatrixOffset(int matrixIndex)
+{
+    return matrixIndex * (dimensions[0].GetLength());
+}
+
+double MeanSquareDerivative(double predictedOutput, double expectedOutput)
+{
+    return predictedOutput - expectedOutput;
+}
+
+double CrossEntropyDerivative(double predictedOutput, double expectedOutput)
+{
+    double x = predictedOutput;
+    double y = expectedOutput;
+    if (x == 0 || x == 1)
+    {
+        return 0;
+    }
+    return (-x + y) / (x * (x - 1));
+}
+
+double GetCostDerivative(int index)
+{
+    double predictedOutput = activations[index];
+    double expectedOutput = expectedOutputs[index];
+    
+    double costDerivative = 0;
+    
+    switch (derivativeType[0])
+    {
+        case 1:
+        //Mean Square
+            costDerivative = MeanSquareDerivative(predictedOutput, expectedOutput);
+            break;
+        case 2:
+        //Cross Entropy
+            costDerivative = CrossEntropyDerivative(predictedOutput, expectedOutput);
+            break;
+    }
+    
+    return costDerivative;
+}
+
+//Sigmoid Derivative Function
+double Sigmoid(double value)
+{
+    double activation = 1.0 / (1 + exp(-value));
+    return activation * (1 - activation);
+}
+
+//TanH Derivative Function
+double TanH(double value)
+{
+    double e2 = exp(2 * value);
+    double t = (e2 - 1) / (e2 + 1);
+    return 1 - t * t;
+}
+
+//ReLu Derivative Function
+double ReLu(double value)
+{
+    return (value > 0) ? 1 : 0;
+}
+
+//SiLu Derivative Function
+double SiLu(double value)
+{
+    double sig = 1 / (1 + exp(-value));
+    return value * sig * (1 - sig) + sig;
+}
+
+//Softmax Derivative Function
+double Softmax(double value)
+{
+    double ex = exp(value);
+    return (ex * expSum - ex * ex) / (expSum * expSum);
+}
+
+double GetActivationDerivative(int index)
+{
+    double weightedInput = weightedInputs[index];
+    
+    double activation = 0;
+    
+    switch (derivativeType[1])
+    {
+        case 1:
+            activation = Sigmoid(weightedInput);
+            break;
+        case 2:
+            activation = TanH(weightedInput);
+            break;
+        case 3:
+            activation = ReLu(weightedInput);
+            break;
+        case 4:
+            activation = SiLu(weightedInput);
+            break;
+        case 5:
+            activation = Softmax(weightedInput);
+            break;
+    }
+    
+    return activation;
+}
+
+
+[numthreads(1, 1, 1)]
+void CSMain(uint3 DispatchThreadID : SV_DispatchThreadID)
+{
+    int row = DispatchThreadID.y;
+    int col = DispatchThreadID.x;
+    int matrixIndex = DispatchThreadID.z;
+    
+    int index = matrixIndex * (dimensions[0].GetLength()) + row * dimensions[0].width + col;
+
+    nodeValues[index] = GetCostDerivative(index) * GetActivationDerivative(index);
+
+}

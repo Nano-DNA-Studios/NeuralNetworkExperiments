@@ -1,0 +1,133 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct MatrixDimensions
+{
+    int width;
+    int height;
+    
+    int GetLength()
+    {
+        return width * height;
+    }
+};
+
+RWStructuredBuffer<MatrixDimensions> dimensions;
+
+RWStructuredBuffer<double> oldNodeValues;
+
+RWStructuredBuffer<double> oldLayerWeights;
+
+RWStructuredBuffer<double> nodeValues;
+
+RWStructuredBuffer<double> weightedInputs;
+
+RWStructuredBuffer<int> activationDerivative;
+
+//Exponential Sum
+float expSum = 0;
+
+int OldLayerWeights(int row, int col)
+{
+    return col * dimensions[0].height + row;
+}
+
+int OldNodeIndex(int row, int col, int matrixIndex)
+{
+    return matrixIndex * dimensions[1].GetLength() + (row * dimensions[1].width + col);
+}
+
+int WeightedInputIndex(int row, int col, int matrixIndex)
+{
+    return matrixIndex * dimensions[2].GetLength() + (row * dimensions[2].width + col);
+}
+
+int OutputNodeIndex(int row, int col, int matrixIndex)
+{
+    return matrixIndex * dimensions[3].GetLength() + (row * dimensions[3].width + col);
+}
+
+double DotProduct(int row, int column, int matrixIndex)
+{
+    double sum = 0;
+     // Perform matrix multiplication
+    for (int i = 0; i < dimensions[0].width; ++i)
+        sum += oldLayerWeights[OldLayerWeights(row, i)] * oldNodeValues[OldNodeIndex(i, column, matrixIndex)];
+        
+    expSum += exp(sum);
+    return sum;
+}
+
+//Sigmoid Derivative Function
+double Sigmoid(double value)
+{
+    double activation = 1.0 / (1 + exp(-value));
+    return activation * (1 - activation);
+}
+
+//TanH Derivative Function
+double TanH(double value)
+{
+    double e2 = exp(2 * value);
+    double t = (e2 - 1) / (e2 + 1);
+    return 1 - t * t;
+}
+
+//ReLu Derivative Function
+double ReLu(double value)
+{
+    return (value > 0) ? 1 : 0;
+}
+
+//SiLu Derivative Function
+double SiLu(double value)
+{
+    double sig = 1 / (1 + exp(-value));
+    return value * sig * (1 - sig) + sig;
+}
+
+//Softmax Derivative Function
+double Softmax(double value)
+{
+    double ex = exp(value);
+    return (ex * expSum - ex * ex) / (expSum * expSum);
+}
+
+double GetActivationDerivative(int index)
+{
+    double weightedInput = weightedInputs[index];
+    
+    double activation = 0;
+    
+    switch (activationDerivative[0])
+    {
+        case 1:
+            activation = Sigmoid(weightedInput);
+            break;
+        case 2:
+            activation = TanH(weightedInput);
+            break;
+        case 3:
+            activation = ReLu(weightedInput);
+            break;
+        case 4:
+            activation = SiLu(weightedInput);
+            break;
+        case 5:
+            activation = Softmax(weightedInput);
+            break;
+    }
+    
+    return activation;
+}
+
+[numthreads(1, 1, 1)]
+void CSMain(uint3 DispatchThreadID : SV_DispatchThreadID)
+{
+    int row = DispatchThreadID.y;
+    int col = DispatchThreadID.x;
+    int matrixIndex = DispatchThreadID.z;
+    
+    nodeValues[OutputNodeIndex(row, col, matrixIndex)] = DotProduct(row, col, matrixIndex) * GetActivationDerivative(OutputNodeIndex(row, col, matrixIndex));
+    
+}
