@@ -60,7 +60,7 @@ public class MatrixNeuralNetwork : MonoBehaviour
     void LoadNetwork()
     {
         //Load Neural Network
-        neuro = loadNeuralNetwork("NeuralNetworks/MatrixGPUNeuro/MatrixNeuro");
+        neuro = loadNeuralNetwork("NeuralNetworks/MatrixGPUNeuro/MatrixNeuroZeroNine128");
 
         neuro.SetActivationFunction(Activation.GetActivationFromType(Activation.ActivationType.Sigmoid), Activation.GetActivationFromType(Activation.ActivationType.Sigmoid));
     }
@@ -175,7 +175,7 @@ public class MatrixNeuralNetwork : MonoBehaviour
         {
             holder.GetChild(1).GetChild(1).GetChild(i).GetComponent<ResultDisplay>().setValue(results[i]);
         }
-        
+
         //Display Guess
         holder.GetChild(1).GetChild(2).GetComponent<Text>().text = "Computer thinks this is a:" + Labels[label];
     }
