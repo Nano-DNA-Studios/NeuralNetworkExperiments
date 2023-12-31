@@ -128,9 +128,15 @@ namespace DNANeuralNet
                 //Calculate
                 computeShader.Dispatch(0, activation.Width, activation.Height, 1);
 
-                //Receaive Result
-                activationVals.GetData(activation.Values);
-                weightedInputVals.GetData(weightedInputs.Values);
+                //Recieve Results
+                DNAMatrixFloat activationMatrix = new DNAMatrixFloat(activation);
+                DNAMatrixFloat weightedInputsMatrix = new DNAMatrixFloat(weightedInputs);
+
+                activationVals.GetData(activationMatrix.Values);
+                weightedInputVals.GetData(weightedInputsMatrix.Values);
+
+                activation = new DNAMatrix(activationMatrix);
+                weightedInputs = new DNAMatrix(weightedInputsMatrix);
 
                 //Clear Memory
                 inputsVals.Release();

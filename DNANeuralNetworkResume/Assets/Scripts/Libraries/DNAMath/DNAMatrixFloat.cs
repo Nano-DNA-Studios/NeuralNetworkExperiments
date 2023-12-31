@@ -48,7 +48,7 @@ namespace DNAMath
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         public static void loadAssets()
         {
-          
+
         }
 
         /// <summary>
