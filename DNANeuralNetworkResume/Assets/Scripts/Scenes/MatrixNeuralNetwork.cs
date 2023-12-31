@@ -60,7 +60,7 @@ public class MatrixNeuralNetwork : MonoBehaviour
     void LoadNetwork()
     {
         //Load Neural Network
-        neuro = loadNeuralNetwork("NeuralNetworks/MatrixGPUNeuro/ActivationTest");
+        neuro = loadNeuralNetwork("NeuralNetworks/MatrixGPUNeuro/NeuroMatrixRELU");
 
         neuro.InitializeFromLoad();
     }
@@ -171,9 +171,14 @@ public class MatrixNeuralNetwork : MonoBehaviour
 
         (int label, DNAMatrix results) = neuro.Classify(data.inputs);
 
+        double total = 0;
+
+        foreach (double value in results.Values)
+            total += value;
+
         for (int i = 0; i < 10; i++)
         {
-            holder.GetChild(1).GetChild(1).GetChild(i).GetComponent<ResultDisplay>().setValue(results[i]);
+            holder.GetChild(1).GetChild(1).GetChild(i).GetComponent<ResultDisplay>().setValue(results[i]/total);
         }
 
         //Display Guess
