@@ -39,7 +39,7 @@ namespace DNANeuralNet
 			}
 		}
 
-		public static IDNAActivation GetActivationFromIndex(int activationIndex = 1)
+		public static IDNAActivation GetActivationFromIndex(int activationIndex)
 		{
 			switch (activationIndex)
 			{

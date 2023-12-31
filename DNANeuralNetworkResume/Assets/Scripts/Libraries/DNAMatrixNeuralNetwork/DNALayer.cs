@@ -57,13 +57,19 @@ namespace DNANeuralNet
 
             InitializeRandomWeights(new System.Random());
 
-            InitializeParallelization();
+            Parallelization = new DNAGPUParallelization(this);
         }
 
         public DNAMatrix CalculateOutputs(DNAMatrix inputs)
         {
             if (DNAGPUParallelization.LayerOutputGPU != null)
-                return Parallelization.LayerOutputCalculationTrainingGPU(inputs).activation;
+            {
+                if (SystemInfo.deviceType == DeviceType.Desktop)
+                    return Parallelization.LayerOutputCalculationTrainingGPU(inputs).activation;
+                else
+                    return Parallelization.LayerOutputCalculationTrainingGPUFloat(inputs).activation;
+            }
+              
             else
                 return activation.Activate((weights * inputs) + biases);
         }
@@ -190,16 +196,15 @@ namespace DNANeuralNet
             this.activation = DNAActivation.GetActivationFromIndex(index);
         }
 
-        public void SetSavedActivationFunction ()
+        public void SetSavedActivationFunction()
         {
             this.activation = DNAActivation.GetActivationFromIndex(ActivationIndex);
         }
 
-        public void InitializeParallelization ()
+        public void InitializeParallelization()
         {
             Parallelization = new DNAGPUParallelization(this);
         }
-
         public void InitializeRandomWeights(System.Random rng)
         {
             for (int weightIndex = 0; weightIndex < weights.Values.Length; weightIndex++)
