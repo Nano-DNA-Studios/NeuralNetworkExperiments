@@ -17,3 +17,11 @@ App is available on Google Play and Apple App Store under the name "Neural Netwo
 
 ![image](https://github.com/user-attachments/assets/205dede4-c51e-423d-b5b8-5ba53c246fb0)
 
+
+## Example Images Evaluated
+
+![Neural Network Experiments Test](https://github.com/user-attachments/assets/4477bbd8-874c-478d-8017-34bd2036e443)
+![Neural Network Experiments Test 2](https://github.com/user-attachments/assets/7fb3f034-f96b-4ad7-80b4-f10acf32447f)
+![Neural Network Experiments Test 3](https://github.com/user-attachments/assets/046ded16-047c-4c0d-aa65-3aa409c67bb4)
+![Neural Network Experiments Test 4](https://github.com/user-attachments/assets/2c22f7d6-b30c-4d7d-9888-86de5285cd59)
+![Neural Network Experiments Test 5](https://github.com/user-attachments/assets/2d1f30b3-8d46-4c7a-a70e-3b0dc5c183db)
