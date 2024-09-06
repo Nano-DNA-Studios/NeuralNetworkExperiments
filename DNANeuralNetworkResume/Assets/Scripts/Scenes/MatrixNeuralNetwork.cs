@@ -61,6 +61,7 @@ public class MatrixNeuralNetwork : MonoBehaviour
     {
         //Load Neural Network
         neuro = loadNeuralNetwork("NeuralNetworks/MatrixGPUNeuro/NeuroMatrixRELU");
+        //neuro = loadNeuralNetwork("NeuralNetworks/Shapes/BestNeuroShapes");
 
         neuro.InitializeFromLoad();
     }
