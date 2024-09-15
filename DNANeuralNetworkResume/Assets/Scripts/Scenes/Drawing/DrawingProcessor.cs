@@ -38,7 +38,7 @@ public class DrawingProcessor : MonoBehaviour, IPointerDownHandler, IDragHandler
         if (IsCustDigit)
             Camera.main.GetComponent<CustDigitScript>().clearImage(image);
         else
-            Camera.main.GetComponent<MatrixNeuralNetwork>().clearImage(image);
+            Camera.main.GetComponent<BaseNeuralNet>().clearImage(image);
     }
 
     // Update is called once per frame
@@ -84,7 +84,7 @@ public class DrawingProcessor : MonoBehaviour, IPointerDownHandler, IDragHandler
                     if (IsCustDigit)
                         Camera.main.GetComponent<CustDigitScript>().NextImage(image);
                     else
-                        Camera.main.GetComponent<MatrixNeuralNetwork>().NextImage(image);
+                        Camera.main.GetComponent<BaseNeuralNet>().NextImage(image);
                 }
             }
         }

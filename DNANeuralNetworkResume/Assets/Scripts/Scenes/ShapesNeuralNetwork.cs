@@ -1,14 +1,18 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DNANeuralNet;
+using DNANeuralNetwork;
 using FlexUI;
+using System.IO;
+using System.Linq;
 using DNAMath;
 using UnityEngine.SceneManagement;
 
-public class MatrixNeuralNetwork : BaseNeuralNet
+public class ShapesNeuralNetwork : BaseNeuralNet
 {
-  /*  [SerializeField] List<string> Labels;
+    /*[SerializeField] List<string> Labels;
 
     [SerializeField] RectTransform background;
     [SerializeField] RectTransform holder;
@@ -56,8 +60,7 @@ public class MatrixNeuralNetwork : BaseNeuralNet
     void LoadNetwork()
     {
         //Load Neural Network
-        neuro = loadNeuralNetwork("NeuralNetworks/MatrixGPUNeuro/NeuroMatrixRELU");
-        //neuro = loadNeuralNetwork("NeuralNetworks/Shapes/BestNeuroShapes");
+        neuro = loadNeuralNetwork("NeuralNetworks/Shapes/BestNeuroShapes");
 
         neuro.InitializeFromLoad();
     }
@@ -138,7 +141,7 @@ public class MatrixNeuralNetwork : BaseNeuralNet
         Guess.UI.GetComponent<Text>().fontSize = textSize;
     }
 
-  /*  public void clearImage(Texture2D img)
+ /*   public void clearImage(Texture2D img)
     {
         for (int i = 0; i < img.width; i++)
         {
@@ -162,9 +165,9 @@ public class MatrixNeuralNetwork : BaseNeuralNet
         return JsonUtility.FromJson<DNANeuralNet.DNANeuralNetwork>(json.text);
     }
 
-   /* public void NextImage(Texture2D image)
+    /*public void NextImage(Texture2D image)
     {
-        DNADataPoint data = imageToData(image, 0, 10);
+        DNADataPoint data = ImageToData(image, 0, Labels.Count);
 
         (int label, DNAMatrix results) = neuro.Classify(data.inputs);
 
@@ -173,7 +176,7 @@ public class MatrixNeuralNetwork : BaseNeuralNet
         foreach (double value in results.Values)
             total += value;
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < Labels.Count; i++)
         {
             holder.GetChild(1).GetChild(1).GetChild(i).GetComponent<ResultDisplay>().setValue(results[i]/total);
         }
@@ -182,7 +185,7 @@ public class MatrixNeuralNetwork : BaseNeuralNet
         holder.GetChild(1).GetChild(2).GetComponent<Text>().text = "Computer thinks this is a:" + Labels[label];
     }
 
-    public DNADataPoint imageToData(Texture2D image, int labelIndex, int labelNum)
+    public DNADataPoint ImageToData(Texture2D image, int labelIndex, int labelNum)
     {
         DNAMatrix pixels = new DNAMatrix(image.height * image.width, 1);
 
