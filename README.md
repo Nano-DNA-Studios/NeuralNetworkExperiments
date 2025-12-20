@@ -8,6 +8,8 @@ The latest model is trained on the GPU with over 250 000 unique handdrawn digits
 
 App is available on Google Play and Apple App Store under the name "Neural Network Experiments"
 
+Check out the GitHub Releases aswell
+
 ## [App Store](https://apps.apple.com/ca/app/neural-network-experiments/id6447320657)
 
 ![image](https://github.com/user-attachments/assets/1f39054c-c106-44a9-a2d1-db5985e9fe8f)
